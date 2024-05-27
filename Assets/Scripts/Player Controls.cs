@@ -34,15 +34,17 @@ public class PlayerControls : NetworkBehaviour
         button = GameObject.FindGameObjectWithTag("A");
         btn = button.GetComponent<Button>();
 
-
-        if (btn != null)
+        if (IsOwner)
         {
-            btn.onClick.AddListener(SpawnBomb); // Llama a la función SpawnBomb al hacer clic en el botón
-        }
-        else
-        {
-            Debug.Log("btn was not found");
-        }
+            if (btn != null)
+            {
+                btn.onClick.AddListener(SpawnBomb); // Llama a la función SpawnBomb al hacer clic en el botón
+            }
+            else
+            {
+                Debug.Log("btn was not found");
+            }
+        } 
     }
 
     public void SpawnBomb()
