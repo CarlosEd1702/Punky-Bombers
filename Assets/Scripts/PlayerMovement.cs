@@ -16,13 +16,13 @@ public class PlayerMovement : MonoBehaviour
     private bool isJoystic = false;
     private bool isKeyboard = false;
     private bool isGamepad = false;
-    private GameObject Canvas;
-    private GameObject UI_P1;
-    private Canvas inputCanvas;
+/*    private Canvas inputCanvas;*/
     [SerializeField] private GameObject player;
+    [SerializeField] private GameObject GO_JS;
     [SerializeField] private VariableJoystick joystick;
     public float playerSpeed;
     [SerializeField] private float rotationSpeed;
+    [SerializeField] private MeshTrail2 M_Dash;
     /* private bool groundedPlayer;*/
     /*    private float jumpHeight = 1.0f;
         private float gravityValue = -9.81f;*/
@@ -34,10 +34,9 @@ public class PlayerMovement : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-        Canvas = GameObject.FindGameObjectWithTag("UI");
-        inputCanvas = Canvas.GetComponent<Canvas>();
-        UI_P1 = GameObject.FindGameObjectWithTag("UI Player 1");
-        joystick = UI_P1.GetComponentInChildren<VariableJoystick>();
+        /*UI_P1 = GameObject.FindGameObjectWithTag("UI Player 1");*/
+        GO_JS = GameObject.FindGameObjectWithTag("Joystic");
+        joystick = GO_JS.GetComponent<VariableJoystick>();
 
         if (controller == null)
         {
@@ -66,9 +65,7 @@ public class PlayerMovement : MonoBehaviour
     public void EnableJoysticInput()
     {
         isJoystic = true;
-        inputCanvas.gameObject.SetActive(true);
     }
-
     public void EnableGamePadInput()
     {
         isGamepad = true;
@@ -88,12 +85,12 @@ public class PlayerMovement : MonoBehaviour
         Vector3 movementDirection;
 
         // Si estás utilizando un joystick, usa su entrada para la dirección de movimiento
-        /*if (isJoystic)
+        if (isJoystic)
         {
             movementDirection = new Vector3(joystick.Direction.x, 0.0f, joystick.Direction.y);
 
         }
-        else */if (isGamepad || isKeyboard)
+        else if (isGamepad || isKeyboard)
         {
             movementDirection = new Vector3(input.x, 0.0f, input.y);
 

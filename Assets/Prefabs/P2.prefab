@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 3551570743664669982}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -145,7 +145,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6230709131907922833, guid: e320445d7b0ab4842a7e54092fc197b2,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: -8366413518642936181}
+      addedObject: {fileID: 8450092198007093931}
   m_SourcePrefab: {fileID: 100100000, guid: e320445d7b0ab4842a7e54092fc197b2, type: 3}
 --- !u!4 &3890388125527355887 stripped
 Transform:
@@ -171,7 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3390623903
+  GlobalObjectIdHash: 2897162564
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -336,10 +336,11 @@ MonoBehaviour:
   movementDirection: {x: 0, y: 0, z: 0}
   controller: {fileID: 0}
   player: {fileID: 4519010175361018709}
+  GO_JS: {fileID: 0}
   joystick: {fileID: 0}
-  inputCanvas: {fileID: 0}
   playerSpeed: 10
   rotationSpeed: 10
+  M_Dash: {fileID: 0}
 --- !u!114 &6629381488689348485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -352,6 +353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0526a7d46c1c2024492db051cd015199, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  btn: {fileID: 0}
   TransformSpawner: {fileID: 7866345039349655388}
   smokePrefab: {fileID: 6669110831885198747, guid: c1e7eb605013bab488c1a035359ac820,
     type: 3}
@@ -395,7 +397,7 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &-8366413518642936181
+--- !u!114 &8450092198007093931
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -404,11 +406,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 4519010175361018709}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Script: {fileID: 11500000, guid: 5c8509190cbf1aa40a5df223657db643, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 234736571
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
+  Destination: {fileID: 0}
+  Player: {fileID: 0}

@@ -11,8 +11,8 @@ public class CubeSpawner : MonoBehaviour
     public float spawnProbability;
     public float spikeSpawnInterval = 1.0f; // Intervalo de tiempo entre la aparición de spikes
 
-    private int currentSpikeIndex = 0; // Índice del spike actual en la lista de objetos vacíos
-    private bool spawningEnabled = false;
+/*    private int currentSpikeIndex = 0; // Índice del spike actual en la lista de objetos vacíos
+    private bool spawningEnabled = false;*/
 
     void Start()
     {

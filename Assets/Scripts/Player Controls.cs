@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerControls : NetworkBehaviour
 {
     private GameObject player;
+    private GameObject BombSpawner;
     private GameObject button;
-    private Button btn;
+    [SerializeField] private Button btn;
     private Transform bombPosition; // Almacena la posición de la bomba cuando se coloca
     private Vector3 bombVector; // Origen del Raycast
 
@@ -22,20 +22,26 @@ public class PlayerControls : NetworkBehaviour
     [SerializeField] private GameObject firePrefab;
     [SerializeField] private float explosionRange;
 
-    [Header("Brick Cube")]
-    [SerializeField] public CubeSpawner _brickSpawn;
+/*    [Header("Brick Cube")]
+    [SerializeField] public CubeSpawner _brickSpawn;*/
 
     [Header("Player")]
     [SerializeField] private PlayerInput playerInput;
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        BombSpawner = GameObject.FindGameObjectWithTag("Bomb Spawn");
         button = GameObject.FindGameObjectWithTag("A");
         btn = button.GetComponent<Button>();
+
 
         if (btn != null)
         {
             btn.onClick.AddListener(SpawnBomb); // Llama a la función SpawnBomb al hacer clic en el botón
+        }
+        else
+        {
+            Debug.Log("btn was not found");
         }
     }
 
@@ -137,12 +143,12 @@ public class PlayerControls : NetworkBehaviour
     IEnumerator DestroyFireClones(GameObject fireClone)
     {
         // Espera un tiempo antes de destruir los clones
-        yield return new WaitForSeconds(2.5f); 
+        yield return new WaitForSeconds(2.5f);
         // Destruye los clones de la explosión y los rastros de fuego
-        //DestroyImmediate(fireClone, true);
+        DestroyImmediate(fireClone, true);
     }
     public void HandleHit(RaycastHit hit)
-    {   
+    {
         if (hit.collider.CompareTag("Brick"))
         {
             // Se detectó una colisión con un objeto etiquetado como "Brick"
