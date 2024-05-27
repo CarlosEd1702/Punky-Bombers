@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Netcode;
 using UnityEngine.InputSystem;
-using UnityEngine.VFX;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     public Vector3 movementDirection;
     public CharacterController controller;
@@ -38,28 +38,32 @@ public class PlayerMovement : MonoBehaviour
         GO_JS = GameObject.FindGameObjectWithTag("Joystic");
         joystick = GO_JS.GetComponent<VariableJoystick>();
 
-        if (controller == null)
+        if (IsOwner)
         {
-            Debug.Log("Controller is null");
-        } else if (rb == null)
-        {
-            Debug.Log("RB is null");
+            if (controller == null)
+            {
+                Debug.Log("Controller is null");
+            }
+            else if (rb == null)
+            {
+                Debug.Log("RB is null");
+            }
+            else if (playerInput == null)
+            {
+                Debug.Log("Player Input is null");
+            }
+            else if (animator == null)
+            {
+                Debug.Log("Animator is null");
+            }
+            else
+            {
+                Debug.Log("Everything was found");
+                EnableJoysticInput();
+                EnableGamePadInput();
+                EnableKeyboardInput();
+            }
         }
-        else if (playerInput == null)
-        {
-            Debug.Log("Player Input is null");
-        } else if (animator == null)
-        {
-            Debug.Log("Animator is null");
-        }
-        else
-        {
-            Debug.Log("Everything was found");
-            EnableJoysticInput();
-            EnableGamePadInput();
-            EnableKeyboardInput();
-        }
-
     }
 
     public void EnableJoysticInput()
