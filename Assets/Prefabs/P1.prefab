@@ -190,6 +190,14 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7178285027560413539}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cd4c01b76130b3144b55e6a46e511e8e,
+        type: 3}
+      insertIndex: -1
+<<<<<<< Updated upstream
+      addedObject: {fileID: -681972100902934206}
+=======
+      addedObject: {fileID: -7163442559015694817}
+>>>>>>> Stashed changes
   m_SourcePrefab: {fileID: 100100000, guid: cd4c01b76130b3144b55e6a46e511e8e, type: 3}
 --- !u!1 &2798964464168559455 stripped
 GameObject:
@@ -255,7 +263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2570552492
+  GlobalObjectIdHash: 2132318418
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -287,7 +295,6 @@ MonoBehaviour:
   firePrefab: {fileID: 3180949470814911794, guid: 5194578dca5ca754d9bdf86ce9a75aa8,
     type: 3}
   explosionRange: 10
-  _brickSpawn: {fileID: 0}
   playerInput: {fileID: 3998211163814418600}
 --- !u!114 &1734114883018405502
 MonoBehaviour:
@@ -489,6 +496,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Destination: {fileID: 0}
   Player: {fileID: 0}
+<<<<<<< Updated upstream
+--- !u!114 &-681972100902934206
+=======
+--- !u!114 &-7163442559015694817
+>>>>>>> Stashed changes
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2798964464168559455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 2036658643627086480}
 --- !u!4 &3286567753053714917 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: cd4c01b76130b3144b55e6a46e511e8e,
