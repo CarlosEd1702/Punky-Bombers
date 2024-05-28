@@ -193,7 +193,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cd4c01b76130b3144b55e6a46e511e8e,
         type: 3}
       insertIndex: -1
+<<<<<<< Updated upstream
       addedObject: {fileID: -681972100902934206}
+=======
+      addedObject: {fileID: -7163442559015694817}
+>>>>>>> Stashed changes
   m_SourcePrefab: {fileID: 100100000, guid: cd4c01b76130b3144b55e6a46e511e8e, type: 3}
 --- !u!1 &2798964464168559455 stripped
 GameObject:
@@ -492,7 +496,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Destination: {fileID: 0}
   Player: {fileID: 0}
+<<<<<<< Updated upstream
 --- !u!114 &-681972100902934206
+=======
+--- !u!114 &-7163442559015694817
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
