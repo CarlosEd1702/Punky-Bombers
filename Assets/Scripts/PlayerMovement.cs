@@ -16,16 +16,12 @@ public class PlayerMovement : NetworkBehaviour
     private bool isJoystic = false;
     private bool isKeyboard = false;
     private bool isGamepad = false;
-/*    private Canvas inputCanvas;*/
+
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject GO_JS;
     [SerializeField] private VariableJoystick joystick;
     public float playerSpeed;
     [SerializeField] private float rotationSpeed;
-/*    [SerializeField] private MeshTrail2 M_Dash;*/
-    /* private bool groundedPlayer;*/
-    /*    private float jumpHeight = 1.0f;
-        private float gravityValue = -9.81f;*/
 
     private void Start()
     {
@@ -34,28 +30,15 @@ public class PlayerMovement : NetworkBehaviour
         playerInput = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-        /*UI_P1 = GameObject.FindGameObjectWithTag("UI Player 1");*/
         GO_JS = GameObject.FindGameObjectWithTag("Joystic");
         joystick = GO_JS.GetComponent<VariableJoystick>();
 
         if (IsOwner)
         {
-            if (controller == null)
-            {
-                Debug.Log("Controller is null");
-            }
-            else if (rb == null)
-            {
-                Debug.Log("RB is null");
-            }
-            else if (playerInput == null)
-            {
-                Debug.Log("Player Input is null");
-            }
-            else if (animator == null)
-            {
-                Debug.Log("Animator is null");
-            }
+            if (controller == null) Debug.Log("Controller is null");
+            else if (rb == null) Debug.Log("RB is null");
+            else if (playerInput == null) Debug.Log("Player Input is null");
+            else if (animator == null) Debug.Log("Animator is null");
             else
             {
                 Debug.Log("Everything was found");
@@ -66,19 +49,9 @@ public class PlayerMovement : NetworkBehaviour
         }
     }
 
-    public void EnableJoysticInput()
-    {
-        isJoystic = true;
-    }
-    public void EnableGamePadInput()
-    {
-        isGamepad = true;
-    }
-
-    public void EnableKeyboardInput()
-    {
-        isKeyboard = true;
-    }
+    public void EnableJoysticInput() { isJoystic = true; }
+    public void EnableGamePadInput() { isGamepad = true; }
+    public void EnableKeyboardInput() { isKeyboard = true; }
 
     void Update()
     {
@@ -86,32 +59,34 @@ public class PlayerMovement : NetworkBehaviour
         input = playerInput.actions["Move"].ReadValue<Vector2>();
 
         // Calcula la dirección de movimiento en base a la entrada del joystick
-        Vector3 movementDirection;
+        Vector3 movementDirection = Vector3.zero;
 
         // Si estás utilizando un joystick, usa su entrada para la dirección de movimiento
         if (isJoystic)
         {
             movementDirection = new Vector3(joystick.Direction.x, 0.0f, joystick.Direction.y);
-
         }
         else if (isGamepad || isKeyboard)
         {
             movementDirection = new Vector3(input.x, 0.0f, input.y);
-
         }
-        else {
+        else
+        {
             // Si no estás utilizando un joystick, usa las teclas de flecha para moverte
             movementDirection = new Vector3(Input.GetAxis("Horizontal"), 0.0f, Input.GetAxis("Vertical"));
         }
 
         // Normaliza la dirección del movimiento para que la velocidad sea constante en todas las direcciones
-        movementDirection.Normalize();
+        if (movementDirection.sqrMagnitude > 0.1f)
+        {
+            movementDirection = CardinalDirection(movementDirection);
+        }
 
         // Mueve el personaje en la dirección calculada
         controller.SimpleMove(movementDirection * playerSpeed);
 
         // Verifica si el jugador está moviéndose
-        if (movementDirection.sqrMagnitude <= 0)
+        if (movementDirection.sqrMagnitude <= 0.1f)
         {
             // Si el jugador no se está moviendo, desactiva el efecto de fuego
             animator.SetBool("Running", false);
@@ -127,4 +102,19 @@ public class PlayerMovement : NetworkBehaviour
         }
     }
 
+    private Vector3 CardinalDirection(Vector3 direction)
+    {
+        Vector3 cardinalDirection = Vector3.zero;
+
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
+        {
+            cardinalDirection = (direction.x > 0) ? Vector3.right : Vector3.left;
+        }
+        else
+        {
+            cardinalDirection = (direction.z > 0) ? Vector3.forward : Vector3.back;
+        }
+
+        return cardinalDirection;
+    }
 }
