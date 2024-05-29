@@ -10,9 +10,14 @@ using System.Threading.Tasks;
 
 public class LobbyManager : MonoBehaviour
 {
+
+    public static LobbyManager Instance { get; private set; }
+
     [SerializeField] private GameObject lobbyCreationParent;
     [SerializeField] private TMP_InputField createLobbyName;
     [SerializeField] private TMP_InputField createLobbyMaxPlayerField;
+
+
     [SerializeField] private GameObject lobbyListParent;
 
     public string joinLobbyID;
@@ -24,21 +29,51 @@ public class LobbyManager : MonoBehaviour
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
 
+    public async void JoinLobby(string lobbyID, bool needPasword)
+    {
+        if(needPasword)
+        {
+            try
+            {
+                
+            }
+            catch(LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
+        }
+        else
+        {
+            try
+            {
+                await LobbyService.Instance.JoinLobbyByIdAsync(lobbyID);
+
+                joinLobbyID = lobbyID;
+            }
+            catch(LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
+        }
+    }
+
     private async void ShowLobbies()
     {
-        while(Application.isPlaying && !lobbyCreationParent.activeInHierarchy)
+        while(Application.isPlaying && lobbyCreationParent.activeInHierarchy)
         {
-            /*QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
+            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
 
-            foreach(Transform t in lobbyContentparent)
+            foreach(Transform t in lobbyContentParent)
             {
                 Destroy(t.gameObject);
             }
 
             foreach(Lobby lobby in queryResponse.Results)
             {
-                Transform newLobbyItem = Instantiate(lobbyItemsPrefab, lobbycontentparent);
-            }*/
+                Transform newLobbyItem = Instantiate(lobbyItemsPrefab, lobbyContentParent);
+                newLobbyItem.GetChild(0).GetComponent<TextMeshProUGUI>().text = lobby.Name;
+                newLobbyItem.GetChild(2).GetComponent<TextMeshProUGUI>().text = lobby.Players.Count + "/" + lobby.MaxPlayers;
+            }
 
             await Task.Delay(1000); 
         }
@@ -70,5 +105,22 @@ public class LobbyManager : MonoBehaviour
         {
             Debug.Log(e);
         }
+       
     }
+
+    private async void LobbyHeartbeat(Lobby lobby)
+    { 
+        while (true)
+        {
+            if (lobby == null)
+            {
+                return;
+            }
+
+            await LobbyService.Instance.SendHeartbeatPingAsync(lobby.Id);
+
+            await Task.Delay(15 * 1000);
+        }
+    }
+
 }
