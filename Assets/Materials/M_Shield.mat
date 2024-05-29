@@ -28,8 +28,10 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _Power: 3
     - _QueueControl: 0
-    m_Colors: []
+    m_Colors:
+    - _Color: {r: 0.25438386, g: 0.53896713, b: 5.9921565, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &7571875138674986722

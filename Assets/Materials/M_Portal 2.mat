@@ -7,10 +7,11 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Portal
+  m_Name: M_Portal 2
   m_Shader: {fileID: -6465566751694194690, guid: f1f20ed2ff3e572469831e1be34a936c,
     type: 3}
-  m_Parent: {fileID: 2100000, guid: 598fec010cf8bb746a8b3ff68cda4fbc, type: 2}
+  m_Parent: {fileID: -876546973899608171, guid: f1f20ed2ff3e572469831e1be34a936c,
+    type: 3}
   m_ModifiedSerializedProperties: 2
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -30,7 +31,7 @@ Material:
     - _Power: 1
     - _QueueControl: 0
     m_Colors:
-    - _ColorPortal: {r: 15.382606, g: 2.6300495, b: 19.320753, a: 0}
+    - _ColorPortal: {r: 19.320753, g: 12.455393, b: 2.6300495, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &1696754072410900908

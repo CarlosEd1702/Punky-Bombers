@@ -22,6 +22,7 @@ TagManager:
   - UI
   - UI Player 1
   - UI Player 2
+  - Shield
   layers:
   - Default
   - TransparentFX

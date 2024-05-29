@@ -22,7 +22,7 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private VariableJoystick joystick;
     public float playerSpeed;
     [SerializeField] private float rotationSpeed;
-    [SerializeField] private MeshTrail2 M_Dash;
+/*    [SerializeField] private MeshTrail2 M_Dash;*/
     /* private bool groundedPlayer;*/
     /*    private float jumpHeight = 1.0f;
         private float gravityValue = -9.81f;*/
