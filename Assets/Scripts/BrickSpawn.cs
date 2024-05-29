@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class CubeSpawner : MonoBehaviour
+public class CubeSpawner : NetworkBehaviour
 {
     public Clock clock;
     public GameObject brickCubePrefab;
@@ -11,15 +12,25 @@ public class CubeSpawner : MonoBehaviour
     public float spawnProbability;
     public float spikeSpawnInterval = 1.0f; // Intervalo de tiempo entre la aparición de spikes
 
-/*    private int currentSpikeIndex = 0; // Índice del spike actual en la lista de objetos vacíos
-    private bool spawningEnabled = false;*/
-
-    void Start()
+    public override void OnNetworkSpawn()
     {
         // Encuentra el objeto que tiene el script Clock adjunto
         clock = FindFirstObjectByType<Clock>();
 
-        // Recorre la lista de objetos vacíos
+        if (IsServer)
+        {
+            // Solo el servidor se encarga de inicializar el spawn de objetos
+            InitializeSpawns();
+            Debug.Log("Is Server");
+        }
+        else
+        {
+            Debug.Log("Is not Server");
+        }
+    }
+
+    private void InitializeSpawns()
+    {
         foreach (Transform emptyObjectTransform in emptyBricksObjectList)
         {
             // Genera un número aleatorio entre 0 y 1
@@ -28,9 +39,27 @@ public class CubeSpawner : MonoBehaviour
             // Compara el número aleatorio con la probabilidad de instanciar el prefab
             if (randomValue <= spawnProbability)
             {
-                // Instancia el prefab en la posición del objeto vacío actual
-                Instantiate(brickCubePrefab, emptyObjectTransform.position, emptyObjectTransform.rotation);
+                Vector3 position = emptyObjectTransform.position;
+                Quaternion rotation = emptyObjectTransform.rotation;
+
+                // Instancia el prefab en el servidor
+                GameObject brickCubeInstance = Instantiate(brickCubePrefab, position, rotation);
+                NetworkObject networkObject = brickCubeInstance.GetComponent<NetworkObject>();
+                networkObject.Spawn();
+
+                // Notifica a los clientes sobre la instancia
+                SpawnBrickCubeClientRpc(position, rotation);
             }
+        }
+    }
+
+    [ClientRpc]
+    private void SpawnBrickCubeClientRpc(Vector3 position, Quaternion rotation)
+    {
+        // Instancia el prefab en el cliente
+        if (!IsServer)
+        {
+            Instantiate(brickCubePrefab, position, rotation);
         }
     }
 }

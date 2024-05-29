@@ -681,8 +681,8 @@ MonoBehaviour:
   player: {fileID: 0}
   GO_JS: {fileID: 0}
   joystick: {fileID: 0}
-  playerSpeed: 5
-  rotationSpeed: 5
+  playerSpeed: 2.5
+  rotationSpeed: 2.5
 --- !u!114 &4747922687107623689
 MonoBehaviour:
   m_ObjectHideFlags: 0
