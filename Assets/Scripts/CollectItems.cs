@@ -1,58 +1,147 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CollectItems : MonoBehaviour
+public class CollectItems : NetworkBehaviour
 {
-
     public GameObject TeleportController;
     public GameObject KeyImage;
+    public GameObject ShieldImage;
+
+    public bool shieldIsActive = false;
 
     public int Boomb;
     public int Flame;
 
-// Start is called before the first frame update
-    void Start()
+    // Start is called before the first frame update
+    public void Start()
     {
-        TeleportController.SetActive(false);
-        KeyImage.SetActive(false);       
+        if (IsServer)
+        {
+            // Buscar y desactivar los objetos TeleportController y KeyImage
+            SearchAndDeactivateObjects();
+        }
     }
 
-    public void OnTriggerEnter(Collider other)
+    private void SearchAndDeactivateObjects()
     {
-        if(other.gameObject.tag == "Boomb")
+        TeleportController = GameObject.FindGameObjectWithTag("TeleportController");
+        KeyImage = GameObject.FindGameObjectWithTag("Key Image");
+        ShieldImage = GameObject.FindGameObjectWithTag("Shield Image");
+
+        if (TeleportController != null)
         {
-            Debug.Log("Boomb +1");
-            Boomb = Boomb + 1;
-            other.gameObject.SetActive(false);
-            Destroy(other.gameObject);
+            TeleportController.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("TeleportController not found in the scene!");
+        }
+
+        if (KeyImage != null)
+        {
+            KeyImage.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("KeyImage not found in the scene!");
+        }
+
+        if (ShieldImage != null)
+        {
+            ShieldImage.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("ShieldImage not found in the scene!");
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!IsOwner)
+            return;
+
+        if (other.gameObject.CompareTag("Boomb"))
+        {
+            Boomb++;
+            var networkObject = other.GetComponent<NetworkObject>();
+            if (networkObject != null)
+            {
+                CollectItemServerRpc(networkObject.NetworkObjectId, "Boomb");
+            }
+        }
+        else if (other.gameObject.CompareTag("Flame"))
+        {
+            Flame++;
+            var networkObject = other.GetComponent<NetworkObject>();
+            if (networkObject != null)
+            {
+                CollectItemServerRpc(networkObject.NetworkObjectId, "Flame");
+            }
+        }
+        else if (other.gameObject.CompareTag("Key"))
+        {
+            var networkObject = other.GetComponent<NetworkObject>();
+            if (networkObject != null)
+            {
+                CollectItemServerRpc(networkObject.NetworkObjectId, "Key");
+            }
+        }
+        else if (other.gameObject.CompareTag("Shield"))
+        {
+            var networkObject = other.GetComponent<NetworkObject>();
+            if (networkObject != null)
+            {
+                CollectItemServerRpc(networkObject.NetworkObjectId, "Shield");
+            }
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void CollectItemServerRpc(ulong networkObjectId, string itemType)
+    {
+        var networkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId];
+        if (networkObject != null)
+        {
+            CollectItemClientRpc(itemType);
+            networkObject.Despawn(true);
+        }
+    }
+
+    [ClientRpc]
+    private void CollectItemClientRpc(string itemType)
+    {
+        if (itemType == "Boomb")
+        {
             ItemsCounter.instancie.IncreaseBooms(Boomb);
         }
-
-        if (other.gameObject.tag == "Flame")
+        else if (itemType == "Flame")
         {
-            Debug.Log("Flame +1");
-            Flame = Flame + 1;
-            other.gameObject.SetActive(false);
-            Destroy(other.gameObject);
             ItemsCounter.instancie.IncreaseFlame(Flame);
         }
-
-        if(other.gameObject.tag == "Key")
+        else if (itemType == "Key")
         {
             Debug.Log("Portales activados");
-            TeleportController.SetActive(true);
-            KeyImage.SetActive(true);
-            
+            if (TeleportController != null)
+            {
+                TeleportController.SetActive(true);
+            }
+            if (KeyImage != null)
+            {
+                KeyImage.SetActive(true);
+            }
         }
-    }
-
-    
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        else if (itemType == "Shield")
+        {
+            Debug.Log("Display Shield");
+            shieldIsActive = true;
+            if (ShieldImage != null)
+            {
+                ShieldImage.SetActive(true);
+            }
+        }
     }
 }

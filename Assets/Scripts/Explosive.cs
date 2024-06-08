@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class Explosive : MonoBehaviour
+public class Explosive : NetworkBehaviour
 {
     [SerializeField] private float _triggerForce;
     [SerializeField] private float _explosionRadius;

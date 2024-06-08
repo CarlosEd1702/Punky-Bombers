@@ -2,24 +2,41 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Teleport : NetworkBehaviour
 {
-    
     public Transform Destination;
-    public GameObject Player;
-    public void OnTriggerEnter(Collider other)
+
+    private void OnTriggerEnter(Collider other)
     {
-       
-
-
-        if (other.gameObject.tag == "Player")
+        if (other.CompareTag("Player") && other.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
         {
-          Player.transform.position = Destination.transform.position;
-
-          Debug.Log("Player on Tp!");
-    
+            // Solo el servidor debe mover a los jugadores
+            if (IsServer)
+            {
+                TeleportPlayerServerRpc(networkObject.NetworkObjectId, Destination.position);
+            }
         }
-    }  
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void TeleportPlayerServerRpc(ulong playerId, Vector3 destination)
+    {
+        NetworkObject playerNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[playerId];
+
+        // Mover al jugador en el servidor
+        playerNetworkObject.transform.position = destination;
+
+        // Notificar a todos los clientes para que actualicen la posición del jugador
+        TeleportPlayerClientRpc(playerId, destination);
+    }
+
+    [ClientRpc]
+    private void TeleportPlayerClientRpc(ulong playerId, Vector3 destination)
+    {
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(playerId, out NetworkObject playerNetworkObject))
+        {
+            playerNetworkObject.transform.position = destination;
+        }
+    }
 }

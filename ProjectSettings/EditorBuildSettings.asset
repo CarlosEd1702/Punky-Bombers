@@ -8,21 +8,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 0
-    path: Assets/Scenes/MultiplayerScene.unity
-    guid: b7a3142c173687d46891bbbd707dbc80
   - enabled: 1
     path: Assets/Scenes/Menu.unity
     guid: 072a9e3fc436c974b8f1d50c14fd96a3
-  - enabled: 1
-    path: Assets/Scenes/Loading.unity
-    guid: 43ae37dd4026e344abb98d8e274b1940
-  - enabled: 1
-    path: Assets/Scenes/Lobby.unity
-    guid: 8a6588e1345b97f45a575f9714af64b3
-  - enabled: 1
-    path: Assets/Scenes/LocalScene.unity
-    guid: 61db1206d0505654c9ece2bb7fab4d70
   - enabled: 1
     path: Assets/Scenes/LocalSceneNetcodew.unity
     guid: 073bfb8191ad66a4f9f0219b149ec3f2

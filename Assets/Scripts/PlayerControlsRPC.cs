@@ -3,41 +3,46 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
 
 public class PlayerControlsRPC : NetworkBehaviour
 {
+    [Header("UI")]
     private GameObject button;
     [SerializeField] private Button btn;
-    private Transform bombPosition; // Almacena la posición de la bomba cuando se coloca
-    private Vector3 bombVector; // Origen del Raycast
 
     [Header("Bomb")]
     private Transform TransformSpawner; // El transform del jugador se asignará a esta variable
     [SerializeField] private GameObject smokePrefab;
     [SerializeField] private GameObject bombPrefab;
-    [SerializeField] private GameObject explosionPrefab;
     [SerializeField] private GameObject firePrefab;
     [SerializeField] private float explosionRange;
     [SerializeField] private CharacterController controller;
+    [SerializeField] private GameObject SpawnBomb;
+    [SerializeField] private Transform T_SpawnBomb;
+    private Transform bombPosition; // Almacena la posición de la bomba cuando se coloca
+    private Vector3 bombVector; // Origen del Raycast
 
-    [Header("Flame")]
-    [SerializeField] private GameObject Flame;
+    [Header("Flame and TNT")]
+    [SerializeField] private GameObject P_FlameTNT;
 
     [Header("Player")]
     [SerializeField] private PlayerInput playerInput;
+
+    private bool isBombActive = false; // Nueva variable para rastrear si una bomba está activa
 
     void Start()
     {
         TransformSpawner = transform; // Asignar el transform del jugador
         button = GameObject.FindGameObjectWithTag("A");
         btn = button.GetComponent<Button>();
+        SpawnBomb = GameObject.FindGameObjectWithTag("Bomb Spawn");
+        T_SpawnBomb = SpawnBomb.GetComponent<Transform>();
 
         if (IsOwner)
         {
             if (btn != null)
             {
-                btn.onClick.AddListener(() => SpawnBombServerRpc(TransformSpawner.position, TransformSpawner.rotation)); // Llama a la función SpawnBomb al hacer clic en el botón
+                btn.onClick.AddListener(() => TrySpawnBomb()); // Llama a TrySpawnBomb al hacer clic en el botón
             }
             else
             {
@@ -46,10 +51,15 @@ public class PlayerControlsRPC : NetworkBehaviour
         }
     }
 
-    private void Update()
+    private void TrySpawnBomb()
     {
-        if (IsOwner) { 
-        
+        if (!isBombActive)
+        {
+            SpawnBombServerRpc(TransformSpawner.position, TransformSpawner.rotation);
+        }
+        else
+        {
+            Debug.Log("A bomb is already active. Please wait for it to explode.");
         }
     }
 
@@ -65,23 +75,18 @@ public class PlayerControlsRPC : NetworkBehaviour
             return;
         }
 
-        Debug.Log($"TransformSpawner Position: {TransformSpawner.position}, Rotation: {TransformSpawner.rotation}");
-        Debug.Log($"Requested Position: {position}, Rotation: {rotation}");
+        isBombActive = true; // Marca la bomba como activa
 
         // Ajustar la posición de Smoke Instance 
-        Vector3 adjustedPosition = new Vector3(position.x, position.y + 1.5f, position.z);
-
-        // Rotacion grados de Smoke Instance
+        Vector3 adjustedPosition = new Vector3(position.x, Mathf.Max(position.y, 1f), position.z); // Ajustar la altura Y a un valor mínimo 
         Quaternion adjustedRotation = Quaternion.Euler(rotation.eulerAngles.x, rotation.eulerAngles.y, rotation.eulerAngles.z);
-        /*        Quaternion adjustedBombRotation = Quaternion.Euler(rotation.eulerAngles.x + 270, rotation.eulerAngles.y, rotation.eulerAngles.z);
-        */
-        Vector3 spawnPosition = controller.transform.position + new Vector3(0, 1f, 0);
-        Quaternion spawnRotation = Quaternion.Euler(270, 0, 0);
+
+        // Vector3 spawnPosition = controller.transform.position + new Vector3(0, 2.5f, 0);
+        Quaternion bombSpawnRotation = Quaternion.Euler(270, 0, 0);
+
         // Instancia smokePrefab y bombPrefab en la posición y rotación ajustadas
         GameObject smokeInstance = Instantiate(smokePrefab, adjustedPosition, adjustedRotation);
-        /*        GameObject bombInstance = Instantiate(bombPrefab, adjustedPosition, adjustedBombRotation);
-        */
-        GameObject bombInstance = Instantiate(bombPrefab, spawnPosition, spawnRotation);
+        GameObject bombInstance = Instantiate(bombPrefab, adjustedPosition, bombSpawnRotation);
 
         NetworkObject smokeNetworkObject = smokeInstance.GetComponent<NetworkObject>();
         NetworkObject bombNetworkObject = bombInstance.GetComponent<NetworkObject>();
@@ -95,11 +100,11 @@ public class PlayerControlsRPC : NetworkBehaviour
 
         Debug.Log($"Bomb Position: {bombPosition.position}");
 
-        // Inicia la coroutine para instanciar la explosión y los rastros de fuego después de 1 segundo
-        StartCoroutine(SpawnExplosion(smokeNetworkObject.NetworkObjectId, bombNetworkObject.NetworkObjectId));
+        // Inicia la coroutine para instanciar el TNT y los rastros de fuego después de 1 segundo
+        StartCoroutine(SpawnTNTAndFire(smokeNetworkObject.NetworkObjectId, bombNetworkObject.NetworkObjectId));
     }
 
-    IEnumerator SpawnExplosion(ulong smokeId, ulong bombId)
+    IEnumerator SpawnTNTAndFire(ulong smokeId, ulong bombId)
     {
         // Espera 3 segundos
         yield return new WaitForSeconds(3f);
@@ -111,22 +116,7 @@ public class PlayerControlsRPC : NetworkBehaviour
         Destroy(smokeNetworkObject.gameObject);
         Destroy(bombNetworkObject.gameObject);
 
-        // Instancia explosionPrefab y fireTrailsPrefab en la posición y rotación de la bomba
-        GameObject explosionInstance = Instantiate(explosionPrefab, bombPosition.position, bombPosition.rotation);
-        NetworkObject explosionNetworkObject = explosionInstance.GetComponent<NetworkObject>();
-        explosionNetworkObject.Spawn();
-
-        // Llama a la función para destruir los clones después de un tiempo determinado
-        StartCoroutine(DestroyClones(explosionNetworkObject.NetworkObjectId));
-    }
-
-    IEnumerator DestroyClones(ulong explosionId)
-    {
-        // Espera un tiempo antes de destruir los clones
-        yield return new WaitForSeconds(2.5f); // Por ejemplo, esperamos 5 segundos
-
-        var explosionNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[explosionId];
-        Destroy(explosionNetworkObject.gameObject);
+        isBombActive = false; // Marca la bomba como no activa después de destruir los clones
     }
 
     void CheckCollision(Vector3 bombVector)
@@ -134,89 +124,124 @@ public class PlayerControlsRPC : NetworkBehaviour
         // Calcular la posición de inicio del raycast
         Vector3 raycastOrigin = bombVector;
 
-        // Lanzar rayos en las cuatro direcciones principales
-        RaycastHit hit;
-        if (Physics.Raycast(raycastOrigin, bombPosition.transform.forward, out hit, explosionRange))
+        // Direcciones para los rayos en el plano XZ
+        Vector3[] directions = {
+            bombPosition.transform.forward,  // Hacia adelante
+            -bombPosition.transform.forward, // Hacia atrás
+            bombPosition.transform.right,    // Hacia la derecha
+            -bombPosition.transform.right    // Hacia la izquierda
+        };
+
+        Color[] debugColors = {
+            Color.blue,  // Color para adelante
+            Color.red,   // Color para atrás
+            Color.yellow, // Color para la derecha
+            Color.white  // Color para la izquierda
+        };
+
+        for (int i = 0; i < directions.Length; i++)
         {
-            Debug.Log("Check Collision Forward");
-            DrawRaycastPath(raycastOrigin, bombPosition.transform.forward, hit.point);
-            HandleHit(hit);
-        }
-        if (Physics.Raycast(raycastOrigin, -bombPosition.transform.forward, out hit, explosionRange))
-        {
-            Debug.Log("Check Collision Back");
-            DrawRaycastPath(raycastOrigin, -bombPosition.transform.forward, hit.point);
-            HandleHit(hit);
-        }
-        if (Physics.Raycast(raycastOrigin, bombPosition.transform.right, out hit, explosionRange))
-        {
-            Debug.Log("Check Collision Right");
-            DrawRaycastPath(raycastOrigin, bombPosition.transform.right, hit.point);
-            HandleHit(hit);
-        }
-        if (Physics.Raycast(raycastOrigin, -bombPosition.transform.right, out hit, explosionRange))
-        {
-            Debug.Log("Check Collision Left");
-            DrawRaycastPath(raycastOrigin, -bombPosition.transform.right, hit.point);
-            HandleHit(hit);
+            Vector3 direction = directions[i];
+            float currentDistance = 0f;
+
+            while (currentDistance < explosionRange)
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(raycastOrigin + direction * currentDistance, direction, out hit, explosionRange - currentDistance))
+                {
+                    Debug.Log($"Check Collision {direction}");
+                    HandleHit(hit);
+                    Debug.DrawRay(raycastOrigin, direction * (currentDistance + hit.distance), debugColors[i], 2f); // Dibuja el rayo
+
+                    // Instancia el fuego a lo largo del recorrido
+                    float segmentLength = 1f; // Longitud de cada segmento
+                    for (float j = currentDistance; j < currentDistance + hit.distance; j += segmentLength)
+                    {
+                        Vector3 firePosition = raycastOrigin + direction * j;
+                        GameObject fireInstance = Instantiate(firePrefab, firePosition, Quaternion.identity);
+                        fireInstance.GetComponent<NetworkObject>().Spawn();
+                        StartCoroutine(DestroyFireAfterDelay(fireInstance, 1f)); // Destruir después de 1 segundo
+                    }
+
+                    currentDistance += hit.distance;
+                    break; // Salir del bucle si se detecta una colisión
+                }
+                else
+                {
+                    Debug.DrawRay(raycastOrigin, direction * explosionRange, debugColors[i], 2f); // Dibuja el rayo completo si no hay colisión
+
+                    // Instancia el fuego a lo largo del recorrido
+                    float segmentLength = 1f; // Longitud de cada segmento
+                    for (float j = currentDistance; j < explosionRange; j += segmentLength)
+                    {
+                        Vector3 firePosition = raycastOrigin + direction * j;
+                        GameObject fireInstance = Instantiate(firePrefab, firePosition, Quaternion.identity);
+                        fireInstance.GetComponent<NetworkObject>().Spawn();
+                        StartCoroutine(DestroyFireAfterDelay(fireInstance, 1f)); // Destruir después de 1 segundo
+                    }
+
+                    currentDistance = explosionRange; // Terminar el bucle
+                }
+            }
         }
     }
 
-    void DrawRaycastPath(Vector3 origin, Vector3 direction, Vector3 hitPoint)
-    {
-        Vector3 currentPosition = origin;
-        Vector3 step = direction.normalized * 1f; // Tamaño de paso para los puntos a lo largo del rayo
-
-        while (Vector3.Distance(currentPosition, hitPoint) > step.magnitude)
-        {
-            InstantiateFireEffect(currentPosition);
-            currentPosition += step;
-        }
-    }
-
-    void InstantiateFireEffect(Vector3 position)
-    {
-        GameObject fireInstance = Instantiate(firePrefab, position, Quaternion.identity);
-        NetworkObject fireNetworkObject = fireInstance.GetComponent<NetworkObject>();
-        fireNetworkObject.Spawn();
-
-        StartCoroutine(DestroyFireClones(fireNetworkObject.NetworkObjectId));
-    }
-
-    IEnumerator DestroyFireClones(ulong fireId)
-    {
-        // Espera un tiempo antes de destruir los clones
-        yield return new WaitForSeconds(2.5f);
-
-        var fireNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[fireId];
-        Destroy(fireNetworkObject.gameObject);
-    }
-
-    public void HandleHit(RaycastHit hit)
+    void HandleHit(RaycastHit hit)
     {
         if (hit.collider.CompareTag("Brick"))
         {
             // Se detectó una colisión con un objeto etiquetado como "Brick"
             Debug.Log("Hit Brick: " + hit.collider.gameObject.name);
-            Destroy(hit.collider.gameObject); // Destruir el ladrillo
-        }
-        else if (hit.collider.CompareTag("Map"))
-        {
-            // Se detectó una colisión con un objeto etiquetado como "Map"
-            Debug.Log("Hit Map: " + hit.collider.gameObject.name);
-            // Aplicar algún efecto al golpear el "Map"
+
+            // Instanciar el TNT en la posición del ladrillo
+            Instantiate(P_FlameTNT, hit.transform.position, Quaternion.identity).GetComponent<NetworkObject>().Spawn();
+
+            // Instanciar el fuego en la posición del ladrillo
+            GameObject fireInstance = Instantiate(firePrefab, hit.transform.position, Quaternion.identity);
+            fireInstance.GetComponent<NetworkObject>().Spawn();
+
+            // Destruir todo el objeto "Brick" después de 2 segundos
+            StartCoroutine(DestroyAfterDelay(hit.collider.gameObject, fireInstance, 2.0f));
         }
         else if (hit.collider.CompareTag("Player"))
         {
             // Se detectó una colisión con un objeto etiquetado como "Player"
             Debug.Log("Hit Player: " + hit.collider.gameObject.name);
             Destroy(hit.collider.gameObject);
-            // Aplicar algún efecto al golpear al jugador
         }
         else
         {
             // No se detectó colisión con objetos especiales
             Debug.Log("Hit something else: " + hit.collider.gameObject.name);
+        }
+    }
+
+    IEnumerator DestroyFireAfterDelay(GameObject fireInstance, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (fireInstance != null)
+        {
+            Destroy(fireInstance);
+        }
+    }
+
+    IEnumerator DestroyAfterDelay(GameObject target, GameObject fireInstance, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Verificar si el objeto objetivo y el efecto de fuego son válidos antes de destruirlos
+        if (target != null)
+        {
+            Destroy(target);
+        }
+
+        if (fireInstance != null)
+        {
+            Destroy(fireInstance);
+        }
+        else
+        {
+            Debug.Log("Fire couldnt be able to destroy");
         }
     }
 }

@@ -61,7 +61,7 @@ public class SpawnerSpikes : MonoBehaviour
         if (CurrentRow < Rows)
         {
             // Si no se ha generado toda la matriz, invocar el método para generar el siguiente bloque después de 1 segundo
-            Invoke("GenerateNextSpike", 0.2f);
+            Invoke("GenerateNextSpike", 0.25f);
         }
     }
 }

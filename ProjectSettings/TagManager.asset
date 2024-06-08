@@ -23,6 +23,9 @@ TagManager:
   - UI Player 1
   - UI Player 2
   - Shield
+  - Boomb
+  - Shield Image
+  - TNT
   layers:
   - Default
   - TransparentFX

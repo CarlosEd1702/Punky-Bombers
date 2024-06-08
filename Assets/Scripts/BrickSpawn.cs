@@ -6,11 +6,13 @@ using Unity.Netcode;
 public class CubeSpawner : NetworkBehaviour
 {
     public Clock clock;
+  
     public GameObject brickCubePrefab;
     public GameObject spikesPrefab;
     public List<Transform> emptyBricksObjectList; // Lista de objetos vacíos en la escena
     public float spawnProbability;
     public float spikeSpawnInterval = 1.0f; // Intervalo de tiempo entre la aparición de spikes
+
 
     public override void OnNetworkSpawn()
     {

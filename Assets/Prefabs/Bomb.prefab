@@ -13,6 +13,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bomb
       objectReference: {fileID: 0}
+    - target: {fileID: 308375638921196172, guid: e3a0666e6e02ac74a8a598f0d62fa4b7,
+        type: 3}
+      propertyPath: m_TagString
+      value: Boomb
+      objectReference: {fileID: 0}
     - target: {fileID: 1084314929239451702, guid: e3a0666e6e02ac74a8a598f0d62fa4b7,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -122,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3323340661
+  GlobalObjectIdHash: 1233288315
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -185,9 +190,9 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 4
+  m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!114 &-6802261528907732571
 MonoBehaviour:
