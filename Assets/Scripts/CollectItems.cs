@@ -23,6 +23,11 @@ public class CollectItems : NetworkBehaviour
             // Buscar y desactivar los objetos TeleportController y KeyImage
             SearchAndDeactivateObjects();
         }
+
+        if (IsOwner)
+        {
+            ShieldImage.SetActive(false);
+        }
     }
 
     private void SearchAndDeactivateObjects()

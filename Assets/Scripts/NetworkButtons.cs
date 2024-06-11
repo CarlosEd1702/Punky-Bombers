@@ -5,19 +5,15 @@ public class NetworkButtons : MonoBehaviour
 {
     void OnGUI()
     {
-        float buttonWidth = 200f;  // Ancho del botÛn
-<<<<<<< Updated upstream
-        float buttonHeight = 100f;  // Alto del botÛn
-=======
-        float buttonHeight = 50f;  // Alto del botÛn
->>>>>>> Stashed changes
+        float buttonWidth = 200f;  // Ancho del bot√≥n
+        float buttonHeight = 50f;  // Alto del bot√≥n
         float buttonSpacing = 20f; // Espacio entre botones
 
         // Centro de la pantalla
         float centerX = (Screen.width - buttonWidth) / 2;
         float centerY = (Screen.height - (buttonHeight * 3 + buttonSpacing * 2)) / 2;
 
-        // ¡rea para los botones centrados en la pantalla
+        // √Årea para los botones centrados en la pantalla
         GUILayout.BeginArea(new Rect(centerX, centerY, buttonWidth, buttonHeight * 3 + buttonSpacing * 2));
 
         if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
@@ -27,7 +23,7 @@ public class NetworkButtons : MonoBehaviour
 
         GUILayout.EndArea();
 
-        // ¡rea para los labels en la esquina superior izquierda
+        // √Årea para los labels en la esquina superior izquierda
         GUILayout.BeginArea(new Rect(10, 10, 300, 100));
 
         if (NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsServer)
@@ -64,4 +60,3 @@ public class NetworkButtons : MonoBehaviour
         GUILayout.EndVertical();
     }
 }
-

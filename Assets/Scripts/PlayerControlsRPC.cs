@@ -27,6 +27,9 @@ public class PlayerControlsRPC : NetworkBehaviour
 
     [Header("Player")]
     [SerializeField] private PlayerInput playerInput;
+    
+    [Header("Player")]
+    [SerializeField] private CollectItems collectItems;
 
     private bool isBombActive = false; // Nueva variable para rastrear si una bomba está activa
 

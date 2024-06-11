@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2390204382969595825}
   - component: {fileID: 3201492318916162233}
   m_Layer: 0
-  m_Name: Bricks Cube
+  m_Name: Voronoi Cube
   m_TagString: Brick
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
