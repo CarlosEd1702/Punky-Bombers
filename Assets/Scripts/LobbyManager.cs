@@ -59,7 +59,7 @@ public class LobbyManager : MonoBehaviour
 
     private async void ShowLobbies()
     {
-        while(Application.isPlaying && lobbyCreationParent.activeInHierarchy)
+       /* while(Application.isPlaying && lobbyCreationParent.activeInHierarchy)
         {
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
 
@@ -76,7 +76,7 @@ public class LobbyManager : MonoBehaviour
             }
 
             await Task.Delay(1000); 
-        }
+        }*/
     }
 
     public void ExitLobbyCreationButton()

@@ -79,7 +79,7 @@ public class PlayerControlsRPC : NetworkBehaviour
     {
         if (!isDashing)
         {
-            DashRpc(positionToSpawn.position, positionToSpawn.rotation);
+            DashServerRpc(positionToSpawn.position, positionToSpawn.rotation);
         }
         else
         {
@@ -88,9 +88,8 @@ public class PlayerControlsRPC : NetworkBehaviour
     }
 
     [ServerRpc]
-    public void DashRpc(Vector3 position, Quaternion rotation)
+    public void DashServerRpc(Vector3 position, Quaternion rotation)
     {
-        
         
         StartCoroutine(Dash());
         StartCoroutine(ActiveTrial(activeTime));

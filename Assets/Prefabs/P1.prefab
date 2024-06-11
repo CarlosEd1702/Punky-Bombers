@@ -216,7 +216,7 @@ MonoBehaviour:
   mat: {fileID: 2100000, guid: 4e524c5df6e409d45b1cba923b38470d, type: 2}
   rb: {fileID: 750628444165293189}
   dashSpeed: 10
-  dashTime: 5
+  dashTime: 3
 --- !u!143 &7366676837949190345
 CharacterController:
   m_ObjectHideFlags: 0
@@ -287,7 +287,6 @@ MonoBehaviour:
   firePrefab: {fileID: 3180949470814911794, guid: 5194578dca5ca754d9bdf86ce9a75aa8,
     type: 3}
   explosionRange: 10
-  _brickSpawn: {fileID: 0}
   playerInput: {fileID: 3998211163814418600}
 --- !u!114 &1734114883018405502
 MonoBehaviour:
