@@ -786,8 +786,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5db62f50c162bde4cb0f6ebdbbcbdba0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Shield: {fileID: 1094967724504850467, guid: f3f4cffd36cd07146a9ba060a0b2f37e, type: 3}
-  CollectItems: {fileID: 1584741497597210702}
+  ShieldPrefab: {fileID: 1094967724504850467, guid: f3f4cffd36cd07146a9ba060a0b2f37e,
+    type: 3}
+  collectItems: {fileID: 1584741497597210702}
 --- !u!1 &2946360302301476290
 GameObject:
   m_ObjectHideFlags: 0

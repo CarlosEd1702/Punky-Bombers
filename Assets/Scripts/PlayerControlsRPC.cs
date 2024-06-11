@@ -86,7 +86,7 @@ public class PlayerControlsRPC : NetworkBehaviour
 
         // Instancia smokePrefab y bombPrefab en la posición y rotación ajustadas
         GameObject smokeInstance = Instantiate(smokePrefab, adjustedPosition, adjustedRotation);
-        GameObject bombInstance = Instantiate(bombPrefab, adjustedPosition, bombSpawnRotation);
+        GameObject bombInstance = Instantiate(bombPrefab, adjustedPosition, Quaternion.identity);
 
         NetworkObject smokeNetworkObject = smokeInstance.GetComponent<NetworkObject>();
         NetworkObject bombNetworkObject = bombInstance.GetComponent<NetworkObject>();
