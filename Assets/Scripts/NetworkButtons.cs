@@ -6,7 +6,11 @@ public class NetworkButtons : MonoBehaviour
     void OnGUI()
     {
         float buttonWidth = 200f;  // Ancho del botón
+<<<<<<< Updated upstream
         float buttonHeight = 100f;  // Alto del botón
+=======
+        float buttonHeight = 50f;  // Alto del botón
+>>>>>>> Stashed changes
         float buttonSpacing = 20f; // Espacio entre botones
 
         // Centro de la pantalla
