@@ -1,55 +1,67 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using System;
+using Unity.Netcode;
 
-public class Clock : MonoBehaviour
+public class Clock : NetworkBehaviour
 {
-    public float TimeSpawnSpikes = 2;
-    public float timer = 180;
-
-
-    public TextMeshProUGUI TimerText;
-
-    public GameObject TimeOver;
-    public GameObject clock;
-    public GameObject SpawnerSpikesController;
-
-    //public GameObject SpikesPrefab;
+    [SerializeField] private NetworkVariable<float> timer = new NetworkVariable<float>(180, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    
+    [SerializeField] private TextMeshProUGUI TimerText;
+    
+    [SerializeField] private GameObject TimeOver;
+    [SerializeField] private GameObject clock;
+    [SerializeField] private GameObject SpawnerSpikesController;
 
     private void Start()
     {
+        if (IsServer)
+        {
+            timer.Value = 180; // Inicializa el temporizador en el servidor
+        }
+        
         TimeOver.SetActive(false);
         clock.SetActive(true);
         
+        timer.OnValueChanged += OnTimerChanged; // Suscribirse al evento de cambio de valor
     }
 
-    // Update is called once per frame
     void Update()
     {
-        timer -= Time.deltaTime;
-        TimerText.text = "" + timer.ToString("f0");
+        if (IsServer)
+        {
+            timer.Value -= Time.deltaTime;
 
-        if (timer <= 60)
-        {
-            SpawnerSpikesController.SetActive(true);
+            if (timer.Value <= 60 && !SpawnerSpikesController.activeSelf)
+            {
+                SpawnerSpikesController.SetActive(true);
+            }
+            if (timer.Value <= 0)
+            {
+                timer.Value = 0; // Asegurarse de que el temporizador no sea negativo
+                TimeOver.SetActive(true);
+                Time.timeScale = 0;
+                clock.SetActive(false);
+            }
         }
-        if(timer <= 0)
-        {
-            TimeOver.SetActive(true);
-            Time.timeScale = 0;
-            clock.SetActive(false);
-        }
+
         Time.timeScale = 1;
     }
 
-   
-
-    /*private void invoke()
+    private void OnTimerChanged(float oldValue, float newValue)
     {
-        throw new NotImplementedException();
-    }*/
+        TimerText.text = newValue.ToString("f0");
+
+        if (newValue <= 0)
+        {
+            TimeOver.SetActive(true);
+            clock.SetActive(false);
+        }
+    }
+
+    // Llamamos al OnDestroy de la clase base sin modificarlo
+    private void OnDestroy()
+    {
+        timer.OnValueChanged -= OnTimerChanged; // Desuscribirse del evento al destruir el objeto
+        base.OnDestroy();
+    }
 }

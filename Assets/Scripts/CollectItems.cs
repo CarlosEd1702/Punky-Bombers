@@ -1,23 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
+using Unity.Netcode;
 
 public class CollectItems : NetworkBehaviour
 {
-    public GameObject TeleportController;
+    private GameObject TeleportController;
     public GameObject KeyImage;
     public GameObject ShieldImage;
 
-    public bool shieldIsActive = false;
+    public NetworkVariable<bool> shieldIsActive = new NetworkVariable<bool>(false);
 
-    public int Boomb;
-    public int Flame;
+    private ItemsCounter itemsCounter;
 
-    // Start is called before the first frame update
-    public void Start()
+    private void Start()
     {
+        itemsCounter = ItemsCounter.instancie;
+        if (itemsCounter == null)
+        {
+            Debug.LogError("ItemsCounter instance not found in the scene!");
+        }
+
         if (IsServer)
         {
             // Buscar y desactivar los objetos TeleportController y KeyImage
@@ -26,8 +29,11 @@ public class CollectItems : NetworkBehaviour
 
         if (IsOwner)
         {
+            TeleportController = GameObject.FindGameObjectWithTag("TeleportController");
             ShieldImage.SetActive(false);
         }
+
+        shieldIsActive.OnValueChanged += OnShieldStateChanged;
     }
 
     private void SearchAndDeactivateObjects()
@@ -71,7 +77,6 @@ public class CollectItems : NetworkBehaviour
 
         if (other.gameObject.CompareTag("Boomb"))
         {
-            Boomb++;
             var networkObject = other.GetComponent<NetworkObject>();
             if (networkObject != null)
             {
@@ -80,7 +85,6 @@ public class CollectItems : NetworkBehaviour
         }
         else if (other.gameObject.CompareTag("Flame"))
         {
-            Flame++;
             var networkObject = other.GetComponent<NetworkObject>();
             if (networkObject != null)
             {
@@ -121,11 +125,11 @@ public class CollectItems : NetworkBehaviour
     {
         if (itemType == "Boomb")
         {
-            ItemsCounter.instancie.IncreaseBooms(Boomb);
+            itemsCounter.IncreaseBooms(1);
         }
         else if (itemType == "Flame")
         {
-            ItemsCounter.instancie.IncreaseFlame(Flame);
+            itemsCounter.IncreaseFlame(1);
         }
         else if (itemType == "Key")
         {
@@ -142,11 +146,19 @@ public class CollectItems : NetworkBehaviour
         else if (itemType == "Shield")
         {
             Debug.Log("Display Shield");
-            shieldIsActive = true;
+            shieldIsActive.Value = true;
             if (ShieldImage != null)
             {
                 ShieldImage.SetActive(true);
             }
+        }
+    }
+
+    private void OnShieldStateChanged(bool oldValue, bool newValue)
+    {
+        if (ShieldImage != null)
+        {
+            ShieldImage.SetActive(newValue);
         }
     }
 }

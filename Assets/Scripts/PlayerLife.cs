@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,6 +7,8 @@ public class PlayerLife : NetworkBehaviour
     [SerializeField] private GameObject ShieldPrefab; // Prefab del escudo
     private GameObject shieldInstance; // Instancia del escudo
     [SerializeField] private CollectItems collectItems;
+    private Animator animator; // Referencia al componente Animator
+    [SerializeField] private PlayerMovement _playerMovement;
 
     private void Start()
     {
@@ -21,76 +22,43 @@ public class PlayerLife : NetworkBehaviour
             }
         }
 
-        // Probar activación de escudo al inicio (puedes remover esto después de verificar)
-        ActivateShield();
-    }
-
-    // Método público para instanciar el escudo
-    public void ActivateShield()
-    {
-        Debug.Log("ActivateShield called");
-
-        if (IsOwner && collectItems.shieldIsActive)
-        {   
-            Debug.Log("Activate Shield - IsOwner and shieldIsActive");
-            ShieldInstanceServerRpc();
-        }
-    }
-
-    // Método público para destruir el escudo
-    public void DeactivateShield()
-    {
-        Debug.Log("DeactivateShield called");
-
-        if (IsOwner && shieldInstance != null)
+        // Obtener referencia al componente Animator
+        animator = GetComponent<Animator>();
+        if (animator == null)
         {
-            DestroyShieldServerRpc();
+            Debug.LogError("Animator component not found on the player object.");
+        }
+
+        // Asegúrate de que _playerMovement esté correctamente asignado
+        if (_playerMovement == null)
+        {
+            _playerMovement = GetComponent<PlayerMovement>();
+            if (_playerMovement == null)
+            {
+                Debug.LogError("PlayerMovement script not found on the player object.");
+            }
         }
     }
 
-    [ServerRpc]
-    private void ShieldInstanceServerRpc(ServerRpcParams rpcParams = default)
+    // Método para manejar cuando el jugador es alcanzado
+    public void HandlePlayerHit()
     {
-        Debug.Log("ShieldInstanceServerRpc called");
-
-        if (shieldInstance == null)
+        if (IsOwner)
         {
-            // Instanciar el escudo en el servidor
-            shieldInstance = Instantiate(ShieldPrefab, transform.position, transform.rotation);
-            NetworkObject shieldNetworkObject = shieldInstance.GetComponent<NetworkObject>();
-            shieldNetworkObject.SpawnWithOwnership(OwnerClientId);
+            // Desactivar los inputs
+            _playerMovement.DisablePlayerMovement();
 
-            // Hacer que el escudo siga al jugador
-            ShieldFollowClientRpc(shieldNetworkObject.NetworkObjectId);
+            animator.SetBool("wasHit", true); // Activar la animación de muerte
+            StartCoroutine(DeactivatePlayerAfterDeath());
         }
     }
 
-    [ServerRpc]
-    private void DestroyShieldServerRpc(ServerRpcParams rpcParams = default)
+    private IEnumerator DeactivatePlayerAfterDeath()
     {
-        Debug.Log("DestroyShieldServerRpc called");
+        // Esperar a que termine la animación de muerte
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length + 1f);
 
-        if (shieldInstance != null)
-        {
-            NetworkObject shieldNetworkObject = shieldInstance.GetComponent<NetworkObject>();
-            shieldNetworkObject.Despawn();
-            Destroy(shieldInstance);
-            shieldInstance = null;
-        }
-    }
-
-    [ClientRpc]
-    private void ShieldFollowClientRpc(ulong shieldNetworkObjectId)
-    {
-        Debug.Log("ShieldFollowClientRpc called");
-
-        // Encontrar el objeto escudo en los clientes
-        NetworkObject shieldNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[shieldNetworkObjectId];
-        if (shieldNetworkObject != null)
-        {
-            shieldInstance = shieldNetworkObject.gameObject;
-            // Hacer que el escudo siga al jugador
-            shieldInstance.transform.SetParent(transform);
-        }
+        // Desactivar el GameObject del jugador
+        gameObject.SetActive(false);
     }
 }

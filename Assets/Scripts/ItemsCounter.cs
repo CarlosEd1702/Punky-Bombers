@@ -9,12 +9,9 @@ public class ItemsCounter : MonoBehaviour
 
     public TMP_Text BoomsText;
     public TMP_Text FlameText;
-   
 
-   
-
-    public int CurrentBooms = 1;
-    public int CurrentFlame = 1;
+    public int CurrentBooms = 1; // Inicializar con 1
+    public int CurrentFlame = 1; // Inicializar con 1
 
     void Awake()
     {
@@ -25,18 +22,17 @@ public class ItemsCounter : MonoBehaviour
     {
         BoomsText.text = "Booms: " + CurrentBooms.ToString();
         FlameText.text = "Flame: " + CurrentFlame.ToString();
-
     }
 
-    public void IncreaseBooms(int i)
+    public void IncreaseBooms(int amount)
     {
-        CurrentBooms += 1;
+        CurrentBooms += amount;
         BoomsText.text = "Booms: " + CurrentBooms.ToString();
     }
-    public void IncreaseFlame(int j)
+
+    public void IncreaseFlame(int amount)
     {
-        CurrentFlame += 1;
+        CurrentFlame += amount;
         FlameText.text = "Flame: " + CurrentFlame.ToString();
     }
-
 }

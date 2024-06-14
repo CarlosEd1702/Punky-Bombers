@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2661377036991346896}
   - component: {fileID: 4063163608974114553}
   - component: {fileID: -2540075802183429276}
+  - component: {fileID: -9175463303960208160}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Brick
@@ -123,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1335550582
+  GlobalObjectIdHash: 1898044132
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -202,3 +203,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-9175463303960208160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8420841201810729431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e51ee21967593b4a8327a5a7a5e90cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemPrefabs:
+  - {fileID: 5996765131504374423, guid: c5284a0ed6eb0b049b73bc3fa91d7954, type: 3}
+  - {fileID: 5996765131504374423, guid: fc7f1facfde299e498a672c75c9ed724, type: 3}
+  - {fileID: 3998371645156850090, guid: fa373535af07b8a46acd96c4d5d84311, type: 3}
+  - {fileID: 5035418651325040095, guid: c9373c1c2a25d7c429f82ff68df6f7f0, type: 3}
+  spawnProbability: 0.25

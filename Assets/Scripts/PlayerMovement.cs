@@ -1,12 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using Unity.Netcode;
 using UnityEngine.InputSystem;
+using Unity.Netcode;
 
 public class PlayerMovement : NetworkBehaviour
 {
+    [Header("Movement")]
     public Vector3 movementDirection;
     public CharacterController controller;
     private Rigidbody rb;
@@ -22,6 +21,9 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private VariableJoystick joystick;
     public float playerSpeed;
     [SerializeField] private float rotationSpeed;
+    
+    [Header("Ship")]
+    [SerializeField] private GameObject shipPrefab;
 
     private void Start()
     {
@@ -32,9 +34,12 @@ public class PlayerMovement : NetworkBehaviour
         animator = GetComponent<Animator>();
         GO_JS = GameObject.FindGameObjectWithTag("Joystic");
         joystick = GO_JS.GetComponent<VariableJoystick>();
+        shipPrefab.SetActive(false);
 
         if (IsOwner)
         {
+            StartCoroutine(ReparentCameraCoroutine());
+
             if (controller == null) Debug.Log("Controller is null");
             else if (rb == null) Debug.Log("RB is null");
             else if (playerInput == null) Debug.Log("Player Input is null");
@@ -49,12 +54,34 @@ public class PlayerMovement : NetworkBehaviour
         }
     }
 
+    private IEnumerator ReparentCameraCoroutine()
+    {
+        // Espera hasta que el NetworkObject esté completamente instanciado
+        yield return new WaitUntil(() => NetworkObject.IsSpawned);
+
+        Transform cameraContainer = transform.Find("CameraContainer");
+        if (cameraContainer != null)
+        {
+            CameraManager.Instance.ReparentCamera(cameraContainer);
+        }
+        else
+        {
+            Debug.LogError("CameraContainer not found");
+        }
+    }
+
     public void EnableJoysticInput() { isJoystic = true; }
     public void EnableGamePadInput() { isGamepad = true; }
     public void EnableKeyboardInput() { isKeyboard = true; }
 
     void Update()
     {
+        if (animator.GetBool("wasHit"))
+        {
+            DisablePlayerMovement();
+            return; // Salir de Update si el jugador ha sido golpeado
+        }
+
         // Lee la entrada del joystick
         input = playerInput.actions["Move"].ReadValue<Vector2>();
 
@@ -116,5 +143,12 @@ public class PlayerMovement : NetworkBehaviour
         }
 
         return cardinalDirection;
+    }
+
+    public void DisablePlayerMovement()
+    {
+        playerInput.enabled = false; // Desactivar inputs de movimiento
+        rb.isKinematic = true; // Hacer el Rigidbody kinemático
+        animator.SetBool("Running", false); // Detener la animación de correr
     }
 }

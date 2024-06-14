@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: 072a9e3fc436c974b8f1d50c14fd96a3
   - enabled: 1
-    path: Assets/Scenes/LocalSceneNetcodew.unity
+    path: Assets/Scenes/LocalSceneNetcode.unity
     guid: 073bfb8191ad66a4f9f0219b149ec3f2
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: dae8308ca74f8e448a77f735c8ec0884,

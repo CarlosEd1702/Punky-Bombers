@@ -26,6 +26,8 @@ TagManager:
   - Boomb
   - Shield Image
   - TNT
+  - Game Manager
+  - Bomb Sound
   layers:
   - Default
   - TransparentFX
